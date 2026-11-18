@@ -2,18 +2,420 @@
 title: "Interactive Maps"
 ---
 
-::: {.page-intro}
-<p class="eyebrow">EXPLORE BY PLACE</p>
+::: {.maps-page}
 
-# Interactive maps
+::: {.maps-hero}
+::: {.maps-hero-copy}
+<p class="eyebrow">CALIFORNIA · OFFICIAL COUNTY DATA</p>
 
-Maps will help explore verified election patterns across California. Geographic visualizations will be added when source data is ready.
+# The map tells a story.
+
+Explore certified results from the June 2026 gubernatorial primary, primary turnout, and the 2024 presidential vote. Hover over a county for the details behind each shade.
 :::
 
-::: {.empty-state}
-<span class="empty-state-label">MAPS · IN DEVELOPMENT</span>
+::: {.maps-hero-note}
+<span class="maps-hero-number">58</span>
+<p>California counties<br><strong>Three interactive views</strong></p>
+<span class="maps-data-tag">OFFICIAL RETURNS</span>
+:::
+:::
 
-## A map of California is on the way
+```{r}
+#| label: map-data
+#| include: false
 
-This page is reserved for interactive maps based on verified election data. No geographic results are displayed yet.
+library(dplyr)
+library(ggplot2)
+library(leaflet)
+library(plotly)
+library(readxl)
+library(sf)
+
+counties <- sf::st_read("data/ca-counties-2024.gpkg", quiet = TRUE) |>
+  sf::st_transform(4326)
+
+check_counties <- function(data, label) {
+  missing <- setdiff(counties$NAME, data$county)
+  extra <- setdiff(data$county, counties$NAME)
+  if (length(missing) > 0 || length(extra) > 0 || nrow(data) != 58) {
+    stop(
+      label, " does not match all 58 California counties. Missing: ",
+      paste(missing, collapse = ", "), "; unexpected: ",
+      paste(extra, collapse = ", ")
+    )
+  }
+}
+
+number_value <- function(x) {
+  suppressWarnings(as.numeric(gsub(",", "", as.character(x))))
+}
+
+governor_book <- as.data.frame(read_excel(
+  "data/ca-2026-primary-governor.xlsx",
+  sheet = 1,
+  col_names = FALSE,
+  .name_repair = "minimal"
+))
+governor_rows <- seq(3L, by = 3L, length.out = 58L)
+governor_counties <- trimws(as.character(governor_book[[1]][governor_rows]))
+candidate_names <- trimws(gsub("[\r\n]+", " ", as.character(governor_book[1, -1])))
+candidate_parties <- trimws(as.character(governor_book[2, -1]))
+
+governor_candidates <- do.call(rbind, lapply(seq_along(governor_rows), \(i) {
+  votes <- vapply(governor_book[governor_rows[i], -1], number_value, numeric(1))
+  data.frame(
+    county = governor_counties[i],
+    candidate = candidate_names,
+    party = candidate_parties,
+    votes = votes,
+    stringsAsFactors = FALSE
+  )
+}))
+governor_results <- do.call(rbind, lapply(split(governor_candidates, governor_candidates$county), \(x) {
+  x <- x[order(-x$votes), ]
+  if (nrow(x) < 2L || x$votes[1] == x$votes[2]) {
+    stop("The 2026 governor results contain a tied or incomplete county contest: ", x$county[1])
+  }
+  total <- sum(x$votes)
+  data.frame(
+    county = x$county[1],
+    winner = x$candidate[1],
+    winner_party = x$party[1],
+    winner_votes = x$votes[1],
+    winner_share = 100 * x$votes[1] / total,
+    runner_up = x$candidate[2],
+    runner_up_votes = x$votes[2],
+    runner_up_share = 100 * x$votes[2] / total,
+    total_votes = total,
+    stringsAsFactors = FALSE
+  )
+}))
+check_counties(governor_results, "The 2026 governor results")
+
+participation_text <- pdftools::pdf_text(
+  "data/ca-2026-primary-voter-participation.pdf"
+) |>
+  paste(collapse = "\n")
+participation_lines <- unlist(strsplit(participation_text, "\n"))
+participation_rows <- participation_lines[grepl(
+  "^\\s*[A-Za-z][A-Za-z ]*\\*{0,2}\\s{2,}[0-9,]+\\s",
+  participation_lines,
+  perl = TRUE
+)]
+participation_rows <- participation_rows[!grepl("^\\s*State Total", participation_rows)]
+turnout_counties <- gsub(
+  "\\*+", "",
+  sub("^\\s*(.*?)\\s{2,}.*$", "\\1", participation_rows, perl = TRUE)
+)
+turnout_fields <- lapply(participation_rows, \(line) {
+  strsplit(sub("^\\s*.*?\\s{2,}", "", line, perl = TRUE), "\\s+")[[1]]
+})
+turnout <- data.frame(
+  county = turnout_counties,
+  registered_voters = vapply(turnout_fields, \(x) number_value(x[3]), numeric(1)),
+  ballots_cast = vapply(turnout_fields, \(x) number_value(x[6]), numeric(1))
+) |>
+  mutate(turnout_pct = 100 * ballots_cast / registered_voters)
+check_counties(turnout, "The 2026 voter participation table")
+
+president_book <- as.data.frame(read_excel(
+  "data/ca-2024-general-president.xlsx",
+  sheet = 1,
+  col_names = FALSE,
+  .name_repair = "minimal"
+))
+president_rows <- seq(3L, by = 3L, length.out = 58L)
+president_counties <- trimws(as.character(president_book[[1]][president_rows]))
+president_candidates <- trimws(gsub("[\r\n]+", " ", as.character(president_book[1, -1])))
+president_parties <- trimws(as.character(president_book[2, -1]))
+democratic_column <- which(president_parties == "DEM")
+republican_column <- which(president_parties == "REP")
+if (length(democratic_column) != 1L || length(republican_column) != 1L) {
+  stop("The 2024 presidential workbook does not identify a unique Democratic and Republican candidate.")
+}
+voting_patterns <- data.frame(
+  county = president_counties,
+  democratic_candidate = president_candidates[democratic_column],
+  republican_candidate = president_candidates[republican_column],
+  democratic_votes = vapply(president_rows, \(r) number_value(president_book[[democratic_column + 1L]][r]), numeric(1)),
+  republican_votes = vapply(president_rows, \(r) number_value(president_book[[republican_column + 1L]][r]), numeric(1))
+) |>
+  mutate(
+    two_party_votes = democratic_votes + republican_votes,
+    democratic_share = 100 * democratic_votes / two_party_votes,
+    republican_share = 100 * republican_votes / two_party_votes,
+    dem_margin_pp = democratic_share - republican_share
+  )
+check_counties(voting_patterns, "The 2024 presidential results")
+
+governor_map <- counties |>
+  left_join(governor_results, by = c("NAME" = "county")) |>
+  mutate(
+    leader_group = case_when(
+      winner_party == "DEM" ~ "Democratic",
+      winner_party == "REP" ~ "Republican",
+      TRUE ~ "Other party"
+    )
+  )
+turnout_map <- counties |>
+  left_join(turnout, by = c("NAME" = "county"))
+patterns_map <- counties |>
+  left_join(voting_patterns, by = c("NAME" = "county"))
+
+party_colors <- c(
+  "Democratic" = "#2d6d99",
+  "Republican" = "#b24c51",
+  "Other party" = "#bd9144"
+)
+leader_groups <- names(party_colors)[names(party_colors) %in% governor_map$leader_group]
+turnout_palette <- colorNumeric(
+  palette = c("#eff6fb", "#a9cce5", "#24618e"),
+  domain = c(0, 100)
+)
+margin_palette <- colorNumeric(
+  palette = c("#b5414d", "#f7f3e8", "#286f9e"),
+  domain = c(-100, 100)
+)
+map_bounds <- sf::st_bbox(counties)
+
+make_map_base <- function(data) {
+  leaflet(data, options = leafletOptions(
+    preferCanvas = TRUE,
+    scrollWheelZoom = FALSE,
+    minZoom = 4,
+    maxZoom = 10
+  )) |>
+    addProviderTiles("CartoDB.PositronNoLabels") |>
+    fitBounds(map_bounds["xmin"], map_bounds["ymin"], map_bounds["xmax"], map_bounds["ymax"])
+}
+
+format_votes <- function(x) {
+  format(x, big.mark = ",", scientific = FALSE, trim = TRUE)
+}
+
+governor_map$hover_html <- paste0(
+  "<strong>", htmltools::htmlEscape(governor_map$NAME), " County</strong><br>",
+  "<b>County leader:</b> ", htmltools::htmlEscape(governor_map$winner),
+  " (", htmltools::htmlEscape(governor_map$winner_party), ")<br>",
+  "<b>Votes:</b> ", format_votes(governor_map$winner_votes),
+  " (", sprintf("%.1f%%", governor_map$winner_share), ")<br>",
+  "<b>Runner-up:</b> ", htmltools::htmlEscape(governor_map$runner_up),
+  " — ", format_votes(governor_map$runner_up_votes),
+  " (", sprintf("%.1f%%", governor_map$runner_up_share), ")<br>",
+  "<b>All candidates:</b> ", format_votes(governor_map$total_votes)
+)
+turnout_map$hover_html <- paste0(
+  "<strong>", htmltools::htmlEscape(turnout_map$NAME), " County</strong><br>",
+  "<b>Turnout:</b> ", sprintf("%.1f%%", turnout_map$turnout_pct), "<br>",
+  "<b>Ballots cast:</b> ", format_votes(turnout_map$ballots_cast), "<br>",
+  "<b>Registered voters:</b> ", format_votes(turnout_map$registered_voters)
+)
+patterns_map$hover_html <- paste0(
+  "<strong>", htmltools::htmlEscape(patterns_map$NAME), " County</strong><br>",
+  "<b>", htmltools::htmlEscape(patterns_map$democratic_candidate), ":</b> ",
+  format_votes(patterns_map$democratic_votes), " (",
+  sprintf("%.1f%%", patterns_map$democratic_share), " of two-party vote)<br>",
+  "<b>", htmltools::htmlEscape(patterns_map$republican_candidate), ":</b> ",
+  format_votes(patterns_map$republican_votes), " (",
+  sprintf("%.1f%%", patterns_map$republican_share), " of two-party vote)<br>",
+  "<b>Democratic margin:</b> ", sprintf("%+.1f pp", patterns_map$dem_margin_pp)
+)
+```
+
+## 2026 governor primary
+
+::: {.map-card}
+::: {.map-card-heading}
+<p class="map-kicker">01 · CERTIFIED RESULTS</p>
+
+### Which candidate led in each county?
+
+County colors show the party of the leading candidate in California's June 2, 2026 gubernatorial primary. Hover to see the county leader, runner-up, votes, and each candidate's share of all votes cast in the county contest.
+:::
+
+```{r}
+#| echo: false
+#| out-width: 100%
+
+make_map_base(governor_map) |>
+  addPolygons(
+    fillColor = ~unname(party_colors[leader_group]),
+    fillOpacity = 0.88,
+    color = "#fffdf8",
+    weight = 1,
+    opacity = 1,
+    label = lapply(governor_map$hover_html, htmltools::HTML),
+    labelOptions = labelOptions(direction = "auto", textsize = "13px"),
+    highlightOptions = highlightOptions(
+      weight = 2,
+      color = "#142b45",
+      bringToFront = TRUE,
+      fillOpacity = 1
+    )
+  ) |>
+  addLegend(
+    position = "bottomright",
+    colors = unname(party_colors[leader_groups]),
+    labels = leader_groups,
+    title = "County leader's party",
+    opacity = 0.95
+  )
+```
+
+<p class="map-explainer"><strong>How to read it.</strong> California's top-two primary includes candidates from all parties. This map identifies the highest-vote candidate within each county; it does not show the statewide top two or imply a general-election winner.</p>
+
+<p class="map-source"><strong>Sources:</strong> California Secretary of State, <a href="https://www.sos.ca.gov/elections/prior-elections/statewide-election-results/primary-election-june-2-2026/statement-vote">June 2, 2026 Statement of Vote</a>, Governor by County (XLSX); county boundaries: U.S. Census Bureau, <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2024.html">2024 TIGER/Line County shapefile</a>.</p>
+:::
+
+## 2026 primary turnout
+
+::: {.map-card}
+::: {.map-card-heading}
+<p class="map-kicker">02 · VOTER PARTICIPATION</p>
+
+### Where did registered voters turn out?
+
+Blue shading shows June 2026 primary turnout for each county. Hover for the percentage and its official ballot and registration counts.
+:::
+
+```{r}
+#| echo: false
+#| out-width: 100%
+
+make_map_base(turnout_map) |>
+  addPolygons(
+    fillColor = ~turnout_palette(turnout_pct),
+    fillOpacity = 0.88,
+    color = "#fffdf8",
+    weight = 1,
+    opacity = 1,
+    label = lapply(turnout_map$hover_html, htmltools::HTML),
+    labelOptions = labelOptions(direction = "auto", textsize = "13px"),
+    highlightOptions = highlightOptions(
+      weight = 2,
+      color = "#142b45",
+      bringToFront = TRUE,
+      fillOpacity = 1
+    )
+  ) |>
+  addLegend(
+    position = "bottomright",
+    pal = turnout_palette,
+    values = ~turnout_pct,
+    title = "Ballots cast /<br>registered voters",
+    labFormat = labelFormat(suffix = "%"),
+    opacity = 0.95
+  )
+```
+
+<p class="map-explainer"><strong>How it is calculated.</strong> Turnout is ballots cast divided by registered voters, using the Secretary of State's county participation table. Its registered-voter denominator is based on the 15-day registration report; the state's footnote notes that same-day registration can occur through Election Day.</p>
+
+<p class="map-source"><strong>Source:</strong> California Secretary of State, <a href="https://www.sos.ca.gov/elections/prior-elections/statewide-election-results/primary-election-june-2-2026/statement-vote">June 2, 2026 Statement of Vote</a>, Voter Participation Statistics by County. County boundaries: U.S. Census Bureau, <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2024.html">2024 TIGER/Line County shapefile</a>.</p>
+:::
+
+## 2024 presidential vote
+
+::: {.map-card}
+::: {.map-card-heading}
+<p class="map-kicker">03 · HISTORICAL GENERAL ELECTION</p>
+
+### Where was the presidential vote competitive?
+
+The red-to-blue scale shows the two-party margin between Kamala Harris and Donald Trump in the November 5, 2024 general election. Near-neutral counties were more competitive; zoom or hover for both candidates' votes and shares.
+:::
+
+```{r}
+#| echo: false
+#| out-width: 100%
+
+make_map_base(patterns_map) |>
+  addPolygons(
+    fillColor = ~margin_palette(dem_margin_pp),
+    fillOpacity = 0.88,
+    color = "#fffdf8",
+    weight = 1,
+    opacity = 1,
+    label = lapply(patterns_map$hover_html, htmltools::HTML),
+    labelOptions = labelOptions(direction = "auto", textsize = "13px"),
+    highlightOptions = highlightOptions(
+      weight = 2,
+      color = "#142b45",
+      bringToFront = TRUE,
+      fillOpacity = 1
+    )
+  ) |>
+  addLegend(
+    position = "bottomright",
+    pal = margin_palette,
+    values = ~dem_margin_pp,
+    title = "Democratic − Republican<br>two-party margin",
+    labFormat = labelFormat(suffix = " pp"),
+    opacity = 0.95
+  )
+```
+
+<p class="map-explainer"><strong>How to read it.</strong> Margin is the Democratic candidate's share minus the Republican candidate's share, calculated among votes for those two candidates only. A positive margin favors Harris; a negative margin favors Trump. Other candidates are excluded from this two-party comparison.</p>
+
+### The closest county margins
+
+These are the ten counties where the 2024 Democratic–Republican two-party margin was nearest to zero.
+
+```{r}
+#| echo: false
+#| out-width: 100%
+
+closest_counties <- voting_patterns |>
+  arrange(abs(dem_margin_pp)) |>
+  slice_head(n = 10) |>
+  arrange(dem_margin_pp)
+closest_counties$county_axis <- factor(
+  closest_counties$county,
+  levels = closest_counties$county
+)
+
+margin_chart <- ggplot(
+  closest_counties,
+  aes(
+    x = dem_margin_pp,
+    y = county_axis,
+    color = dem_margin_pp
+  )
+) +
+  geom_vline(xintercept = 0, color = "#9c927e", linewidth = 0.6) +
+  geom_point(size = 3.5) +
+  scale_color_gradient2(
+    low = "#b5414d",
+    mid = "#d8d1c2",
+    high = "#286f9e",
+    midpoint = 0
+  ) +
+  labs(
+    x = "Democratic minus Republican two-party margin (percentage points)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(color = "#29445f"),
+    axis.title.x = element_text(color = "#66717a", size = 10),
+    plot.margin = margin(12, 14, 8, 8)
+  )
+
+plotly::ggplotly(margin_chart, tooltip = c("x", "y"), height = 390) |>
+  plotly::config(displayModeBar = FALSE, responsive = TRUE)
+```
+
+<p class="map-source"><strong>Sources:</strong> California Secretary of State, <a href="https://www.sos.ca.gov/elections/prior-elections/statewide-election-results/general-election-nov-5-2024/statement-vote">November 5, 2024 Statement of Vote</a>, President by County (XLSX); county boundaries: U.S. Census Bureau, <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2024.html">2024 TIGER/Line County shapefile</a>.</p>
+:::
+
+::: {.map-status}
+<p class="map-kicker">A NOTE ON ELECTION SHIFTS</p>
+
+### No 2024–2026 shift map
+
+The county-level 2026 results shown here are for a gubernatorial primary; the historical map is for the 2024 presidential general election. Those are different offices and election types, so comparing their county margins would not measure a meaningful election shift.
+:::
+
 :::

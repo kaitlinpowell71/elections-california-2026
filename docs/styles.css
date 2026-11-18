@@ -289,6 +289,211 @@ h3 {
   margin: 0;
 }
 
+.maps-page {
+  margin: 1.25rem auto 4rem;
+  max-width: 90rem;
+}
+
+.maps-hero {
+  align-items: center;
+  background:
+    radial-gradient(ellipse at 82% 16%, rgb(189 145 68 / 20%), transparent 32%),
+    linear-gradient(122deg, #142b45 0%, #1d3b59 68%, #29445f 100%);
+  border: 1px solid rgb(20 43 69 / 8%);
+  border-radius: 0.75rem;
+  color: var(--paper);
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) 13rem;
+  margin: 1.5rem 0 2.5rem;
+  min-height: 18rem;
+  overflow: hidden;
+  padding: clamp(2rem, 6vw, 4.5rem);
+}
+
+.maps-hero-copy {
+  max-width: 48rem;
+}
+
+.maps-hero .eyebrow {
+  color: var(--gold-light);
+}
+
+.maps-hero h1 {
+  color: var(--paper);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.5rem, 6vw, 4.3rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  margin: 0 0 1rem;
+}
+
+.maps-hero-copy > p:last-child {
+  color: rgb(255 253 248 / 82%);
+  font-size: 1.05rem;
+  margin: 0;
+  max-width: 42rem;
+}
+
+.maps-hero-note {
+  align-self: stretch;
+  border-left: 1px solid rgb(234 217 181 / 55%);
+  color: rgb(255 253 248 / 82%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 1.5rem;
+}
+
+.maps-hero-number {
+  color: var(--gold-light);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.maps-hero-note p {
+  line-height: 1.5;
+  margin: 0.5rem 0 1.25rem;
+}
+
+.maps-hero-note strong {
+  color: var(--paper);
+}
+
+.maps-data-tag {
+  color: var(--gold-light);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.maps-page > h2 {
+  color: var(--navy);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.7rem, 3vw, 2.15rem);
+  margin: 2.75rem 0 1rem;
+}
+
+.map-card,
+.map-status {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  box-shadow: 0 0.55rem 1.7rem rgb(20 43 69 / 5%);
+  margin: 0 0 2.5rem;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.map-card-heading {
+  margin-bottom: 1.25rem;
+  max-width: 58rem;
+}
+
+.map-kicker {
+  color: var(--gold);
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  margin: 0 0 0.55rem;
+}
+
+.map-card-heading h3,
+.map-status h3 {
+  color: var(--navy);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+}
+
+.map-card-heading > p:last-child {
+  color: var(--muted);
+  margin: 0;
+}
+
+.map-card .leaflet.html-widget {
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  height: 560px !important;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.map-card .leaflet-container {
+  background: #e9eef0;
+  font-family: "DM Sans", sans-serif;
+}
+
+.map-card .leaflet-control-legend,
+.map-card .leaflet-control.legend {
+  background: rgb(255 253 248 / 95%);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  box-shadow: 0 0.2rem 0.8rem rgb(20 43 69 / 10%);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  padding: 0.65rem 0.8rem;
+}
+
+.map-card .leaflet-control-attribution {
+  font-size: 0.65rem;
+}
+
+.map-explainer {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 1.1rem 0 0.9rem;
+  max-width: 72rem;
+}
+
+.map-explainer strong,
+.map-source strong {
+  color: var(--navy);
+}
+
+.map-source {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  margin: 1rem 0 0;
+  padding-top: 0.85rem;
+}
+
+.map-source a {
+  color: var(--navy-soft);
+  text-decoration-color: var(--gold);
+  text-underline-offset: 0.15rem;
+}
+
+.map-source a:hover,
+.map-source a:focus {
+  color: var(--navy);
+}
+
+.map-status {
+  background:
+    linear-gradient(110deg, rgb(234 217 181 / 20%), transparent 55%),
+    var(--paper);
+  border-left: 4px solid var(--gold);
+  box-shadow: none;
+  margin-top: 2.5rem;
+  max-width: 68rem;
+}
+
+.map-status > p:last-child {
+  color: var(--muted);
+  margin: 0;
+  max-width: 58rem;
+}
+
+.map-card .plotly.html-widget {
+  margin: 0.5rem 0 0;
+  max-width: 100%;
+}
+
 #quarto-footer {
   background: var(--navy);
   color: rgb(255 253 248 / 75%);
@@ -314,6 +519,31 @@ h3 {
 
   .feature-card {
     min-height: 0;
+  }
+
+  .maps-hero {
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    margin-top: 0.75rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .maps-hero-note {
+    border-left: 0;
+    border-top: 1px solid rgb(234 217 181 / 55%);
+    padding: 1.25rem 0 0;
+  }
+
+  .maps-hero-note p {
+    margin-bottom: 0.8rem;
+  }
+
+  .map-card .leaflet.html-widget {
+    height: 440px !important;
+  }
+
+  .map-card .plotly.html-widget {
+    min-height: 390px;
   }
 }
 
