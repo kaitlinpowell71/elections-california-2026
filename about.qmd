@@ -1,0 +1,19 @@
+---
+title: "About"
+---
+
+::: {.page-intro}
+<p class="eyebrow">ABOUT THE PROJECT</p>
+
+# Clear analysis, careful sourcing
+
+California Votes: 2026 is a college data science project about understanding election results through thoughtful analysis and accessible visualizations.
+:::
+
+## What this site will do
+
+The project will organize verified California election information, describe the methods used to analyze it, and make geographic patterns easier to explore. The goal is to inform—not to predict or imply results before reliable data is available.
+
+## Data and methods
+
+Election results, source citations, and analytical details will be added here alongside the relevant findings. Until then, this site contains no election statistics or outcome claims.

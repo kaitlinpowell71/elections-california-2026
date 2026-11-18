@@ -1,0 +1,327 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap");
+
+:root {
+  --navy: #142b45;
+  --navy-soft: #29445f;
+  --cream: #fbf8f0;
+  --paper: #fffdf8;
+  --gold: #bd9144;
+  --gold-light: #ead9b5;
+  --ink: #1d2b38;
+  --muted: #66717a;
+  --line: #e7e0d2;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+#quarto-header .navbar {
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  box-shadow: none;
+  min-height: 4.5rem;
+}
+
+.navbar-brand {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.navbar .nav-link {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: var(--gold-light);
+}
+
+#quarto-content {
+  padding-top: 1.25rem;
+}
+
+.hero-panel {
+  align-items: center;
+  background:
+    radial-gradient(ellipse at 82% 18%, rgb(189 145 68 / 16%), transparent 32%),
+    linear-gradient(125deg, #142b45 0%, #1d3b59 68%, #29445f 100%);
+  border-radius: 0.35rem;
+  color: var(--paper);
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  margin: 1rem 0 4.25rem;
+  min-height: 24rem;
+  overflow: hidden;
+  padding: clamp(2rem, 7vw, 5.5rem);
+  position: relative;
+}
+
+.hero-panel::after {
+  border: 1px solid rgb(234 217 181 / 20%);
+  border-radius: 50%;
+  content: "";
+  height: 25rem;
+  position: absolute;
+  right: -9rem;
+  top: -13rem;
+  width: 25rem;
+}
+
+.hero-copy,
+.hero-note {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-copy {
+  max-width: 46rem;
+}
+
+.eyebrow,
+.card-kicker,
+.empty-state-label {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin: 0 0 1rem;
+}
+
+.hero-panel .eyebrow {
+  color: var(--gold-light);
+}
+
+.hero-copy h1,
+.page-intro h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  margin: 0 0 1.25rem;
+}
+
+.hero-copy > p:not(.eyebrow) {
+  color: rgb(255 253 248 / 82%);
+  font-size: 1.08rem;
+  max-width: 40rem;
+}
+
+.button-primary {
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 0.2rem;
+  color: #172a3d;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.button-primary:hover,
+.button-primary:focus {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  color: #172a3d;
+  transform: translateY(-1px);
+}
+
+.hero-note {
+  align-self: end;
+  border-left: 1px solid rgb(234 217 181 / 55%);
+  color: rgb(255 253 248 / 78%);
+  font-size: 0.88rem;
+  padding: 0 0 0 1.2rem;
+}
+
+.hero-note p {
+  margin: 0;
+}
+
+.hero-note strong {
+  color: var(--paper);
+}
+
+.note-mark {
+  color: var(--gold-light);
+  display: block;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.85rem;
+}
+
+h2,
+h3 {
+  color: var(--navy);
+}
+
+#quarto-content h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.feature-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 3.5rem;
+}
+
+.feature-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  min-height: 15rem;
+  padding: 1.5rem;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.feature-card:hover {
+  box-shadow: 0 0.7rem 1.8rem rgb(20 43 69 / 8%);
+  transform: translateY(-2px);
+}
+
+.feature-card .card-kicker {
+  color: var(--muted);
+  display: block;
+  font-size: 0.65rem;
+  margin-bottom: 1.1rem;
+}
+
+.feature-card h3 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.45rem;
+  margin: 0 0 0.65rem;
+}
+
+.feature-card p {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.feature-card a {
+  color: var(--navy);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 0.2rem;
+}
+
+.closing-note {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-top: 1.25rem;
+}
+
+.closing-note p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.closing-note strong {
+  color: var(--navy);
+}
+
+.closing-rule {
+  background: var(--gold);
+  flex: 0 0 2.5rem;
+  height: 2px;
+}
+
+.page-intro {
+  border-bottom: 1px solid var(--line);
+  margin: 2.5rem 0 2rem;
+  max-width: 52rem;
+  padding-bottom: 2rem;
+}
+
+.page-intro h1 {
+  color: var(--navy);
+  font-size: clamp(2.5rem, 5vw, 3.6rem);
+}
+
+.page-intro > p:last-child {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 46rem;
+}
+
+.empty-state {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--gold);
+  margin: 2rem 0 5rem;
+  max-width: 52rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.empty-state .empty-state-label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state h2 {
+  font-size: 1.6rem !important;
+  margin: 0 0 0.5rem !important;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin: 0;
+}
+
+#quarto-footer {
+  background: var(--navy);
+  color: rgb(255 253 248 / 75%);
+  font-size: 0.82rem;
+  margin-top: 3rem;
+}
+
+@media (max-width: 767px) {
+  .hero-panel {
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 3rem;
+  }
+
+  .hero-note {
+    align-self: auto;
+    max-width: 22rem;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-card {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

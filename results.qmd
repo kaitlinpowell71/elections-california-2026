@@ -1,0 +1,19 @@
+---
+title: "Election Results"
+---
+
+::: {.page-intro}
+<p class="eyebrow">CALIFORNIA · 2026</p>
+
+# Election results
+
+Verified election returns and analysis will be presented here when the data is available. This page intentionally contains no estimated or illustrative results.
+:::
+
+::: {.empty-state}
+<span class="empty-state-label">DATA STATUS</span>
+
+## Results are not yet published
+
+The results section is being prepared for verified data. Sources and relevant context will accompany the analysis once it is added.
+:::

@@ -1,0 +1,19 @@
+---
+title: "Interactive Maps"
+---
+
+::: {.page-intro}
+<p class="eyebrow">EXPLORE BY PLACE</p>
+
+# Interactive maps
+
+Maps will help explore verified election patterns across California. Geographic visualizations will be added when source data is ready.
+:::
+
+::: {.empty-state}
+<span class="empty-state-label">MAPS · IN DEVELOPMENT</span>
+
+## A map of California is on the way
+
+This page is reserved for interactive maps based on verified election data. No geographic results are displayed yet.
+:::

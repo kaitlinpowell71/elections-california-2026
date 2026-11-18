@@ -1,0 +1,30 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "California Votes: 2026"
+  description: "A data-driven look at California's 2026 elections."
+  site-url: "https://kaitlinpowell71.github.io/elections-california-2026/"
+  navbar:
+    background: "#142b45"
+    foreground: "#fffaf0"
+    title: "California Votes: 2026"
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Election Results"
+        href: results.qmd
+      - text: "Interactive Maps"
+        href: maps.qmd
+      - text: "About"
+        href: about.qmd
+  page-footer:
+    center: "A college data science project · California elections, 2026"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    page-layout: full
+    toc: false

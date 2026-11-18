@@ -1,0 +1,60 @@
+---
+title: "California Votes: 2026"
+subtitle: "A closer look at the people, places, and choices shaping California's elections."
+---
+
+::: {.hero-panel}
+::: {.hero-copy}
+<p class="eyebrow">THE 2026 ELECTION · CALIFORNIA</p>
+
+# Follow the vote. Understand the story.
+
+This project will bring verified California election data into one clear, approachable place. Explore results, compare patterns across communities, and use interactive maps to see how outcomes vary across the state.
+
+<a class="button button-primary" href="results.qmd">Explore election results <span aria-hidden="true">→</span></a>
+:::
+
+::: {.hero-note}
+<span class="note-mark" aria-hidden="true">CA</span>
+<p><strong>Evidence first</strong><br>Results and analysis will be added after reliable data is available and checked.</p>
+:::
+:::
+
+## A statewide view, with room for detail
+
+::: {.feature-grid}
+::: {.feature-card}
+<span class="card-kicker">01 / RESULTS</span>
+
+### Election results
+
+Review verified returns and examine how election outcomes differ across races and places.
+
+[Visit election results →](results.qmd)
+:::
+
+::: {.feature-card}
+<span class="card-kicker">02 / GEOGRAPHY</span>
+
+### Interactive maps
+
+Explore geographic patterns through maps built from verified election data.
+
+[Explore the maps →](maps.qmd)
+:::
+
+::: {.feature-card}
+<span class="card-kicker">03 / APPROACH</span>
+
+### About this project
+
+Learn about the project's data sources, methods, and goals.
+
+[About the project →](about.qmd)
+:::
+:::
+
+::: {.closing-note}
+<span class="closing-rule"></span>
+<p><strong>Built for curiosity, grounded in data.</strong> This site is a work in progress. No results or statistics are shown until they can be supported by verified sources.</p>
+:::
